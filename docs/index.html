@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Somi Browser — Web Preview</title>
+  <link rel="icon" href="assets/icon.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Segoe UI", system-ui, Arial, sans-serif; color: #e8eef7;
+      background: #0b1220; display: flex; flex-direction: column; height: 100vh;
+    }
+    /* ---- toolbar ---- */
+    .toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 10px;
+      background: #131c2e; border-bottom: 1px solid #22304a; }
+    .btn { width: 34px; height: 34px; border: none; border-radius: 8px; cursor: pointer;
+      font-size: 15px; color: #cdd9ec; background: #1c2942; transition: background .15s; }
+    .btn:hover { background: #26375a; }
+    .addr { flex: 1; height: 34px; padding: 0 16px; border-radius: 999px; font-size: 14px;
+      color: #eef4fc; background: #0e1626; border: 1px solid #26375a; outline: none; }
+    .addr:focus { border-color: #3b82f6; }
+    .go { background: #2563eb; color: #fff; padding: 0 14px; width: auto; font-weight: 600; }
+    .go:hover { background: #1d4ed8; }
+    .brand { display: flex; align-items: center; gap: 8px; padding: 0 8px 0 4px; font-weight: 700; }
+    .brand img { width: 22px; height: 22px; }
+    /* ---- tab strip ---- */
+    .tabstrip { display: flex; align-items: center; gap: 4px; padding: 6px 10px 0;
+      background: #131c2e; overflow-x: auto; }
+    .tab { display: flex; align-items: center; gap: 8px; max-width: 200px; padding: 8px 12px;
+      background: #1a2740; border: 1px solid #22304a; border-bottom: none;
+      border-radius: 10px 10px 0 0; cursor: pointer; font-size: 13px; white-space: nowrap; }
+    .tab.active { background: #0b1220; color: #fff; }
+    .tab .ttl { overflow: hidden; text-overflow: ellipsis; }
+    .tab .x { opacity: .6; }
+    .tab .x:hover { opacity: 1; }
+    .newtab { background: #1c2942; border-radius: 8px; padding: 6px 11px; cursor: pointer; }
+    .newtab:hover { background: #26375a; }
+    /* ---- content ---- */
+    .content { position: relative; flex: 1; background: #0b1220; }
+    iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: #fff; }
+    .hint { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; display: none;
+      justify-content: center; gap: 10px; align-items: center; padding: 8px;
+      font-size: 12.5px; color: #9fb3d1; background: rgba(11,18,32,.92);
+      border-top: 1px solid #22304a; }
+    .hint a { color: #7db1ff; font-weight: 600; text-decoration: none; }
+    /* ---- home portal ---- */
+    .home { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 30px; overflow: auto; padding: 30px;
+      background: radial-gradient(1200px 600px at 50% -10%, #1e3a8a 0%, #0b1220 60%, #070b14 100%); }
+    .home .logo { display: flex; align-items: center; gap: 16px; }
+    .home .logo img { width: 56px; height: 56px; filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
+    .home h1 { font-size: 32px; } .home h1 span { color: #93c5fd; }
+    .home form { width: min(600px, 86vw); }
+    .home input { width: 100%; padding: 16px 22px; font-size: 16px; color: #f8fafc;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+      border-radius: 999px; outline: none; }
+    .home input:focus { border-color: #3b82f6; }
+    .tiles { display: grid; grid-template-columns: repeat(4, 92px); gap: 14px; }
+    @media (max-width: 540px) { .tiles { grid-template-columns: repeat(3, 92px); } }
+    .tile { display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 7px; height: 86px; text-decoration: none; color: #e5edf9; font-size: 12.5px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+      border-radius: 16px; cursor: pointer; transition: transform .12s, background .2s; }
+    .tile:hover { transform: translateY(-3px); background: rgba(255,255,255,.16); }
+    .tile .e { font-size: 24px; }
+    .ribbon { position: fixed; top: 0; right: 0; z-index: 9; font-size: 11px; color: #b9c7dd;
+      background: #1d4ed8; padding: 4px 12px; border-radius: 0 0 0 10px; }
+  </style>
+</head>
+<body>
+  <div class="ribbon">Web Preview · full app on GitHub Releases</div>
+
+  <div class="toolbar">
+    <span class="brand"><img src="assets/icon.png" alt="" />Somi</span>
+    <button class="btn" id="back" title="Back">◀</button>
+    <button class="btn" id="fwd" title="Forward">▶</button>
+    <button class="btn" id="reload" title="Reload">⟳</button>
+    <button class="btn" id="home" title="Home">⌂</button>
+    <input class="addr" id="addr" placeholder="Search Google or type a URL, then Enter" />
+    <button class="btn go" id="go">Go</button>
+    <button class="btn" id="open" title="Open current page in a real tab">↗</button>
+  </div>
+
+  <div class="tabstrip" id="tabstrip"></div>
+
+  <div class="content">
+    <iframe id="frame" title="page"></iframe>
+    <div class="home" id="homeview">
+      <div class="logo"><img src="assets/icon.png" alt="" /><h1>Somi <span>Browser</span></h1></div>
+      <form id="hform" autocomplete="off">
+        <input id="hsearch" placeholder="Search Google or type a URL, then Enter" />
+      </form>
+      <div class="tiles">
+        <a class="tile" data-url="https://github.com"><span class="e">🐙</span>GitHub</a>
+        <a class="tile" data-url="https://en.wikipedia.org"><span class="e">📚</span>Wikipedia</a>
+        <a class="tile" data-url="https://www.youtube.com"><span class="e">▶️</span>YouTube</a>
+        <a class="tile" data-url="https://mail.google.com"><span class="e">✉️</span>Gmail</a>
+        <a class="tile" data-url="https://www.reddit.com"><span class="e">👽</span>Reddit</a>
+        <a class="tile" data-url="https://chat.openai.com"><span class="e">🤖</span>ChatGPT</a>
+        <a class="tile" data-url="https://www.linkedin.com"><span class="e">💼</span>LinkedIn</a>
+        <a class="tile" data-url="https://www.sourabhxmishra.com"><span class="e">🧑‍💻</span>Sourabh</a>
+      </div>
+    </div>
+    <div class="hint" id="hint">
+      Page blank? Many sites (Google, YouTube…) block being embedded.
+      <a id="hintopen" target="_blank" rel="noopener">Open in a real tab ↗</a>
+    </div>
+  </div>
+
+  <script>
+    // Smart address bar — mirrors the desktop app's Browser.to_url()
+    function toUrl(text) {
+      text = text.trim();
+      if (/^https?:\/\//i.test(text)) return text;
+      if (!text.includes(" ") && text.includes(".")) return "https://" + text;
+      return "https://www.google.com/search?q=" + encodeURIComponent(text);
+    }
+
+    const frame = document.getElementById("frame");
+    const homeview = document.getElementById("homeview");
+    const addr = document.getElementById("addr");
+    const hint = document.getElementById("hint");
+    const hintopen = document.getElementById("hintopen");
+    const strip = document.getElementById("tabstrip");
+
+    let tabs = [];      // { title, hist:[urls], hi:index }  ('' = home)
+    let active = 0;
+
+    function cur() { return tabs[active]; }
+    function curUrl() { const t = cur(); return t.hist[t.hi]; }
+
+    function newTab(url = "") {
+      tabs.push({ title: "New Tab", hist: [url], hi: 0 });
+      active = tabs.length - 1;
+      render();
+    }
+    function closeTab(i) {
+      tabs.splice(i, 1);
+      if (!tabs.length) return newTab();
+      active = Math.min(active, tabs.length - 1);
+      render();
+    }
+    function navigate(url) {
+      const t = cur();
+      t.hist = t.hist.slice(0, t.hi + 1);
+      t.hist.push(url);
+      t.hi++;
+      t.title = url ? url.replace(/^https?:\/\//, "").split("/")[0] : "New Tab";
+      render();
+    }
+    function back() { const t = cur(); if (t.hi > 0) { t.hi--; render(); } }
+    function fwd() { const t = cur(); if (t.hi < t.hist.length - 1) { t.hi++; render(); } }
+
+    function render() {
+      // tab strip
+      strip.innerHTML = "";
+      tabs.forEach((t, i) => {
+        const el = document.createElement("div");
+        el.className = "tab" + (i === active ? " active" : "");
+        el.innerHTML = `<span class="ttl">${t.title}</span><span class="x">✕</span>`;
+        el.querySelector(".ttl").onclick = () => { active = i; render(); };
+        el.querySelector(".x").onclick = (e) => { e.stopPropagation(); closeTab(i); };
+        strip.appendChild(el);
+      });
+      const plus = document.createElement("div");
+      plus.className = "newtab"; plus.textContent = "＋";
+      plus.onclick = () => newTab();
+      strip.appendChild(plus);
+
+      // content
+      const url = curUrl();
+      addr.value = url;
+      if (url) {
+        homeview.style.display = "none";
+        if (frame.src !== url) frame.src = url;
+        hint.style.display = "flex";
+        hintopen.href = url;
+      } else {
+        homeview.style.display = "flex";
+        frame.src = "about:blank";
+        hint.style.display = "none";
+      }
+    }
+
+    // toolbar wiring
+    document.getElementById("back").onclick = back;
+    document.getElementById("fwd").onclick = fwd;
+    document.getElementById("reload").onclick = () => { if (curUrl()) frame.src = frame.src; };
+    document.getElementById("home").onclick = () => navigate("");
+    document.getElementById("go").onclick = () => navigate(toUrl(addr.value));
+    document.getElementById("open").onclick = () => { const u = curUrl(); if (u) window.open(u, "_blank"); };
+    addr.addEventListener("keydown", (e) => { if (e.key === "Enter") navigate(toUrl(addr.value)); });
+
+    // home portal wiring
+    document.getElementById("hform").addEventListener("submit", (e) => {
+      e.preventDefault();
+      navigate(toUrl(document.getElementById("hsearch").value));
+    });
+    document.querySelectorAll(".tile").forEach((t) =>
+      (t.onclick = () => navigate(t.dataset.url)));
+
+    newTab();   // start on the home portal
+  </script>
+</body>
+</html>
