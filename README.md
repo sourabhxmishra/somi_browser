@@ -1,17 +1,21 @@
-# somi_browser
+# 🌐 Somi Browser
 
-S1 -->  Open Pycharm
+A lightweight **tabbed** desktop web browser built with **Python + PyQt5** (Chromium via `QtWebEngine`) — a clean toolbar, a smart address bar, and real multi-tab browsing in ~130 lines.
 
-s2 -->  Create New Project (Enter any name and do not make any change in virtual environment)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![PyQt5](https://img.shields.io/badge/PyQt5-41CD52?logo=qt&logoColor=white)
 
-s3 -->  Write down the code in main.py or app.py
+## ✨ Features
+- **Tabs** — open (`＋`), close, and reorder multiple pages
+- **Smart address bar** — type a full URL, a bare domain (`github.com`), or any text to Google-search it
+- **Navigation** — back ◀, forward ▶, reload ⟳, home ⌂
+- **Live titles** — each tab shows the page's title
 
-s4 -->  Install some necessary external libraries or packages by using commands below:
-                
-                1. pip install PyQt5
-                   or python -m pip install PyQt5
-                  
-                2. pip install PyQtWebEngine
-                   or python -m pip install PyQtWebEngine
-                   
-s5 -->  Now run the code (Hurray..)
+## 🚀 Run it
+```bash
+pip install -r requirements.txt      # PyQt5 + PyQtWebEngine
+python app.py
+```
+
+## 🛠️ How it works
+Each page is rendered by a Chromium `QWebEngineView`; a `QTabWidget` hosts one view per tab. Toolbar `QAction`s drive the *active* view's back / forward / reload, and the address bar normalises whatever you type into either a URL or a Google search before loading it.
