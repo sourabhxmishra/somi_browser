@@ -65,13 +65,11 @@
       border-radius: 16px; cursor: pointer; transition: transform .12s, background .2s; }
     .tile:hover { transform: translateY(-3px); background: rgba(255,255,255,.16); }
     .tile .e { font-size: 24px; }
-    .ribbon { position: fixed; top: 0; right: 0; z-index: 9; font-size: 11px; color: #b9c7dd;
-      background: #1d4ed8; padding: 4px 12px; border-radius: 0 0 0 10px; }
+    .note { font-size: 12.5px; color: #8aa0bd; margin-top: 2px; }
+    .note a { color: #7db1ff; text-decoration: none; font-weight: 600; }
   </style>
 </head>
 <body>
-  <div class="ribbon">Web Preview · full app on GitHub Releases</div>
-
   <div class="toolbar">
     <span class="brand"><img src="assets/icon.png" alt="" />Somi</span>
     <button class="btn" id="back" title="Back">◀</button>
@@ -102,6 +100,7 @@
         <a class="tile" data-url="https://www.linkedin.com"><span class="e">💼</span>LinkedIn</a>
         <a class="tile" data-url="https://www.sourabhxmishra.com"><span class="e">🧑‍💻</span>Sourabh</a>
       </div>
+      <div class="note">Web preview of the desktop app · <a href="https://github.com/sourabhxmishra/somi_browser/releases/latest" target="_blank" rel="noopener">Download the full Somi Browser ↗</a></div>
     </div>
     <div class="hint" id="hint">
       Page blank? Many sites (Google, YouTube…) block being embedded.
@@ -199,7 +198,7 @@
       navigate(toUrl(document.getElementById("hsearch").value));
     });
     document.querySelectorAll(".tile").forEach((t) =>
-      (t.onclick = () => navigate(t.dataset.url)));
+      (t.onclick = () => window.open(t.dataset.url, "_blank")));
 
     newTab();   // start on the home portal
   </script>
