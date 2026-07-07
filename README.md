@@ -5,6 +5,12 @@ A lightweight **tabbed** desktop web browser built with **Python + PyQt5** (Chro
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![PyQt5](https://img.shields.io/badge/PyQt5-41CD52?logo=qt&logoColor=white)
 [![Download](https://img.shields.io/badge/%E2%AC%87_Download-Windows_app-2563EB)](https://github.com/sourabhxmishra/somi_browser/releases/latest)
+[![Live preview](https://img.shields.io/badge/%F0%9F%96%A5_Live-web_preview-3b82f6)](https://sourabhxmishra.github.io/somi_browser/)
+
+## 🖥️ Try it online
+The tabbed UI, smart address bar, and start portal — running live in your browser:
+
+**[Open the Somi Browser web preview →](https://sourabhxmishra.github.io/somi_browser/)**
 
 ## ⬇️ Download & run (Windows)
 Download **`SomiBrowser-win64.zip`** from the **[latest release](https://github.com/sourabhxmishra/somi_browser/releases/latest)**, unzip it, and run **`SomiBrowser.exe`** — no Python required. It ships with its own globe app icon.
