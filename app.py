@@ -8,10 +8,12 @@ Features:
 
 Run:  python app.py        (needs PyQt5 + PyQtWebEngine — see requirements.txt)
 """
+import os
 import sys
 from urllib.parse import quote
 
 from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import (
     QAction,
@@ -22,13 +24,22 @@ from PyQt5.QtWidgets import (
     QToolBar,
 )
 
-HOME_URL = "https://www.google.com"
+
+def resource(name):
+    """Find a bundled asset whether running from source or a PyInstaller .exe."""
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, name)
+
+
+ICON = resource(os.path.join("assets", "icon.ico"))
+HOME_URL = QUrl.fromLocalFile(resource("home.html")).toString()
 
 
 class Browser(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Somi Browser")
+        self.setWindowIcon(QIcon(ICON))
 
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
@@ -103,13 +114,15 @@ class Browser(QMainWindow):
     def sync_url_bar(self, _index):
         view = self.current()
         if view is not None:
-            self.url_bar.setText(view.url().toString())
-            self.url_bar.setCursorPosition(0)
+            self._show_url(view.url().toString())
+
+    def _show_url(self, url):
+        self.url_bar.setText("" if url == HOME_URL else url)
+        self.url_bar.setCursorPosition(0)
 
     def _on_url(self, q, view):
         if view is self.current():
-            self.url_bar.setText(q.toString())
-            self.url_bar.setCursorPosition(0)
+            self._show_url(q.toString())
 
     def _on_title(self, title, view):
         index = self.tabs.indexOf(view)
@@ -122,6 +135,7 @@ class Browser(QMainWindow):
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Somi Browser")
+    app.setWindowIcon(QIcon(ICON))
     window = Browser()
     window.showMaximized()
     sys.exit(app.exec_())

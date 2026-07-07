@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Somi Browser — Start</title>
+  <style>
+    :root { --card: rgba(255, 255, 255, .08); --border: rgba(255, 255, 255, .16); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 34px;
+      font-family: "Segoe UI", system-ui, Arial, sans-serif; color: #f8fafc;
+      background: radial-gradient(1200px 600px at 50% -10%, #1e3a8a 0%, #0b1220 60%, #070b14 100%);
+    }
+    .brand { display: flex; align-items: center; gap: 16px; }
+    .brand img { width: 60px; height: 60px; filter: drop-shadow(0 6px 16px rgba(0,0,0,.5)); }
+    .brand h1 { font-size: 34px; font-weight: 700; letter-spacing: .3px; }
+    .brand span { color: #93c5fd; }
+    #greeting { color: #9fb3d1; font-size: 15px; margin-top: -18px; }
+    form { width: min(620px, 88vw); position: relative; }
+    input {
+      width: 100%; padding: 18px 22px; font-size: 17px; color: #f8fafc;
+      background: var(--card); border: 1px solid var(--border); border-radius: 999px;
+      outline: none; backdrop-filter: blur(6px); transition: border-color .2s, background .2s;
+    }
+    input::placeholder { color: #8aa0bd; }
+    input:focus { border-color: #3b82f6; background: rgba(255,255,255,.12); }
+    .tiles { display: grid; grid-template-columns: repeat(4, 96px); gap: 16px; }
+    @media (max-width: 560px) { .tiles { grid-template-columns: repeat(3, 96px); } }
+    a.tile {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; height: 92px; text-decoration: none; color: #e5edf9; font-size: 13px;
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      transition: transform .12s ease, background .2s, border-color .2s;
+    }
+    a.tile:hover { transform: translateY(-3px); background: rgba(255,255,255,.15); border-color: #3b82f6; }
+    a.tile .emoji { font-size: 26px; }
+    footer { position: fixed; bottom: 18px; color: #64748b; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="brand">
+    <img src="assets/icon.png" alt="Somi Browser" />
+    <h1>Somi <span>Browser</span></h1>
+  </div>
+  <div id="greeting"></div>
+
+  <form action="https://www.google.com/search" method="get" autocomplete="off">
+    <input name="q" placeholder="Search Google or type a URL, then press Enter" autofocus />
+  </form>
+
+  <div class="tiles">
+    <a class="tile" href="https://github.com"><span class="emoji">🐙</span>GitHub</a>
+    <a class="tile" href="https://www.youtube.com"><span class="emoji">▶️</span>YouTube</a>
+    <a class="tile" href="https://en.wikipedia.org"><span class="emoji">📚</span>Wikipedia</a>
+    <a class="tile" href="https://mail.google.com"><span class="emoji">✉️</span>Gmail</a>
+    <a class="tile" href="https://maps.google.com"><span class="emoji">🗺️</span>Maps</a>
+    <a class="tile" href="https://www.reddit.com"><span class="emoji">👽</span>Reddit</a>
+    <a class="tile" href="https://chat.openai.com"><span class="emoji">🤖</span>ChatGPT</a>
+    <a class="tile" href="https://www.linkedin.com"><span class="emoji">💼</span>LinkedIn</a>
+  </div>
+
+  <footer>Somi Browser · your lightweight start portal</footer>
+
+  <script>
+    const h = new Date().getHours();
+    const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+    document.getElementById("greeting").textContent = part + " — where to today?";
+  </script>
+</body>
+</html>
